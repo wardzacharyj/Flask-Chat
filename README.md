@@ -1,12 +1,12 @@
-#CS/COE 1520 Assignment 3
+# CS/COE 1520 Assignment 3
 
-##Goal:
+## Goal:
 To gain experience using AJAJ and JSON by building a website to host and manage multiple chat rooms.
 
-##High-level description:
+## High-level description:
 You will be writing a website to host and manage chat rooms.
 
-##Specifications:
+## Specifications:
 1.  When visiting the page for the first time, users should be given the chance to create an account or login
 1.  Once successfully logged in, the user should be given a list of possible chat rooms to join, or a message stating that none currently exist.
 	The user should also have the option to create a new chat room.
@@ -27,7 +27,7 @@ You will be writing a website to host and manage chat rooms.
 1.  All data for your application should be stored in an SQLite database named "chat.db" using SQLAlchemy's ORM and the Flask-SQLAlchemy extension.
 1.  You must build your website using JavaScript, JSON, AJAJ, Python 3.5 or greater, Flask 0.12, SQLAlchemy, and the Flask-SQLAlchemy extension.
 
-##Submission Guidelines:
+## Submission Guidelines:
 *  **DO NOT SUBMIT** any IDE package files.
 *  Do not include chat.db in your submitted repository.
 *  You must name the main flask file for your site "chat.py", and place it in the root directory of your repository.
@@ -36,11 +36,11 @@ You will be writing a website to host and manage chat rooms.
 *  You must fill out info_sheet.txt.
 *  Be sure to remember to push the latest copy of your code back to your GitHub repository before the the assignment is due.  At the deadline, the repositories will automatically be copied for grading.  Whatever is present in your GitHub repository at that time will be considered your submission for this assignment.
 
-##Additional Notes/Hints:
+## Additional Notes/Hints:
 *  You may find the use of profiles (https://support.google.com/chrome/answer/2364824) helpful for testing multiple users logging in to the chat site at the same time.
 *  While you are not going to be heavily graded on the style and design of your web site, it should be presented in a clear and readable manner.
 
-##Grading Rubric:
+## Grading Rubric:
 *  User management (account creation/login/logout) works as specified: 10%
 *  List of available chat rooms shown:  10%
 *  Leaving a chat room works as specified:  10%
