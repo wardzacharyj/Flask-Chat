@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/material.min.css') }}">
+    <script type="text/javascript" src="{{ url_for('static',filename='stylesheets/material.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static',filename='stylesheets/splash.js') }}"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='stylesheets/mycss.css') }}">
+
+
+
+    <meta charset="UTF-8">
+    <title>Splash</title>
+</head>
+<body class="my-color-gray my-secondary-font">
+
+    <div class="mdl-grid center-items">
+        <div class="mdl-cell mdl-cell--4-col"></div>
+        <div class="mdl-cell mdl-cell--4-col  mdl-typography--text-center">
+            <div class="mdl-grid center-items">
+                <div class="center-splash">
+                    <form action="" method="post">
+                        <h3 id="login-banner" class="mdl-typography--display-1 my-primary-font">
+                            Login
+                        </h3>
+
+                        <div id="login-container">
+                            <div id="input_name" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label hidden">
+                                <input class="mdl-textfield__input" type="text" id="name" name="name">
+                                <label class="mdl-textfield__label" for="name">Name</label>
+                            </div>
+
+                            <div id="input_username" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" type="text" id="username" name="username">
+                                <label class="mdl-textfield__label" for="username">Username</label>
+                            </div>
+
+                            <div id="input_password" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label ">
+                                <input class="mdl-textfield__input" type="password" id="password" name="password">
+                                <label class="mdl-textfield__label" for="password">Password</label>
+                            </div>
+                        </div>
+
+                         {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <ul class=flashes style="padding: 10px;">
+                                {% for message in messages %}
+                                    <h6 class="error-message">{{ message }}</h6>
+                                {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+
+
+                        <button id="btn_login" formaction="/login" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Sign In</button>
+                        <button id="btn_signup" formaction="/signup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored hidden">Sign Up</button>
+
+                        <div class="mdl-grid center-items switch_holder">
+                            <div class="mdl-typography--text-center">
+                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect " for="switch-config">
+                                    <input type="checkbox" id="switch-config" class="mdl-switch__input">
+                                    <span class="mdl-switch__label"></span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col"></div>
+    </div>
+
+</body>
+</html>

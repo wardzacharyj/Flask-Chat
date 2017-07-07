@@ -1,0 +1,13 @@
+<!-- Links in drawer -->
+<div class="mdl-layout__drawer main-drawer-holder">
+    <span class="mdl-layout-title mdl-color-text--white">
+
+        Active Users
+
+    </span>
+    <nav class="mdl-navigation">
+        {% for user in room['users'] %}
+            <a class="mdl-navigation__link custom-hover">{{ user }}</a>
+        {% endfor %}
+    </nav>
+</div>

@@ -1,0 +1,80 @@
+<html>
+    <head>
+
+        <!-- CSS Resources -->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/material.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/mycss.css') }}">
+
+        <!-- JS Resources -->
+        <script type="text/javascript" src="{{ url_for('static', filename='stylesheets/material.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='stylesheets/dash.js') }}"></script>
+
+
+        <!-- Material Design icon font -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    </head>
+    <body>
+
+        <!-- The drawer is always open in large screens. The header is always shown, even in small screens. -->
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header my-color-light-gray">
+
+
+            <!-- Header -->
+            <header class="mdl-layout__header my-color-gray">
+
+                <div class="mdl-layout__header-row">
+
+                    {% if user is defined %}
+                        <span class="mdl-layout-title">Chat Rooms</span>
+                    {% elif room.owner_id == room.sender_id %}
+                        <span class="mdl-layout-title">{{ room.room_name }}</span>
+                        <button class="mdl-button mdl-js-button mdl-button--icon left-offset">
+                             <i class="material-icons" href="/delete_room/{{ room.id }}">delete</i>
+                        </button>
+                    {% else %}
+                        <span class="mdl-layout-title">{{ room.room_name }}</span>
+                    {% endif %}
+
+
+                    <div class="mdl-layout-spacer"></div>
+
+                    <nav class="mdl-navigation">
+
+                        <a class="mdl-navigation__link" href="/logout">Logout</a>
+
+                    </nav>
+
+                </div>
+
+            </header>
+
+
+            {% if user is defined %}
+                {% include "myRooms.html" %}
+            {% else %}
+                {% include "roomDrawer.html" %}
+            {% endif %}
+
+
+            <main class="mdl-layout__content">
+
+
+                <div class="page-content mdl-grid center-items" style="background: #36393e">
+                    <div class="mdl-cell mdl-cell--12-col">
+
+                        <div class="mdl-grid center-items">
+                            {% if user is defined %}
+                                {% include "roomList.html" %}
+                            {% else %}
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+  </body>
+</html>

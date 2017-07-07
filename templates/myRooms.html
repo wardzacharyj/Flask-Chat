@@ -1,0 +1,17 @@
+<!-- Links For The Current User's Chat Rooms -->
+<div class="mdl-layout__drawer main-drawer-holder">
+    <span class="mdl-layout-title mdl-color-text--white">
+
+        Your Rooms
+
+        <button class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">add</i>
+        </button>
+
+    </span>
+    <nav class="mdl-navigation">
+        {% for r in user['my_room'] %}
+            <a class="mdl-navigation__link custom-hover" href="/room/{{ r.id }}">{{ r.room_name }}</a>
+        {% endfor %}
+    </nav>
+</div>

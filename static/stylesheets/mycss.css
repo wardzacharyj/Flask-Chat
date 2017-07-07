@@ -1,0 +1,118 @@
+/* Drawer Styling*/
+
+.main-drawer-holder{
+    background: #1e2124;
+    border-right: none;
+}
+.custom-hover:hover{
+    background: #2f3136 !important;
+    color: #b9bbbe !important;
+    cursor: hand;
+}
+
+.custom-hover{
+    color: #72767d !important;
+}
+
+
+/* List Styles */
+.my-sep{
+    background: #424549;
+    border-top-color: #303338;
+}
+
+
+/* Color Scheme */
+.my-primary-font{
+    color: white !important;
+}
+
+.my-secondary-font{
+    color: #c3c4c5 !important;
+}
+
+.minor-icon-font{
+    color: #acadaf;
+}
+
+.major-icon-font{
+    display: inline-flex !important;
+    font-size: 30px !important;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-color-light-gray{
+    background: #36393e;
+}
+
+.my-color-gray{
+    background: #2f3136;
+}
+
+.my-color-dark-gray{
+    background: #1e2124;
+}
+
+/* Utility */
+
+.left-offset{
+    margin-left: 10px;
+}
+
+
+
+
+
+
+
+
+
+.center-splash{
+    margin-top: 120px;
+}
+
+.width-80{
+    width: 80%;
+}
+
+
+
+#login-banner{
+    margin: 0;
+    padding-top: 32px;
+    padding-bottom: 16px;
+}
+
+#login-container{
+    padding: 30px;
+}
+
+.switch_holder{
+    margin-top: 75px;
+    padding: 16px;
+}
+
+.max-width {
+    width: 100%;
+}
+
+#btn_login {
+    width: 62%;
+}
+
+#btn_signup {
+    width: 62%;
+}
+
+.mdl-grid.center-items {
+  justify-content: center;
+}
+
+.error-message{
+    font-size: 16px;
+    color: #f44336;
+    padding-bottom: 16px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}

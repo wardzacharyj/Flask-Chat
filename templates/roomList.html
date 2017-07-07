@@ -1,0 +1,28 @@
+<!-- Owner's  Staff List -->
+
+<div class="max-width">
+    {% if user['all_rooms'] %}
+        <ul class="mdl-list " >
+
+        {% for room in user['all_rooms'] %}
+            <li class="mdl-list__item mdl-list__item--two-line">
+                <span class="mdl-list__item-primary-content">
+                  <i class="mdl-color--deep-purple-300 material-icons mdl-list__item-avatar major-icon-font">people</i>
+                  <span class="my-primary-font">{{ room.room_name }}</span>
+                  <span class="mdl-list__item-sub-title my-secondary-font">{{ room.room_owner }}s</span>
+                </span>
+                <span class="mdl-list__item-secondary-content">
+                  <a class="mdl-list__item-secondary-action" href="/room/{{ room.id }}">
+                      <i class="material-icons minor-icon-font">question_answer</i>
+                  </a>
+                </span>
+            </li>
+            {% if user['all_rooms'][-1] != room  %}
+                <hr class="my-sep">
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% else %}
+        <h6 style="padding-top: 55px; font-size: 16px;" class="mdl-typography--display-1 mdl-typography--text-center">There are no chat rooms created</h6>
+    {% endif %}
+</div>
