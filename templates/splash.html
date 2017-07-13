@@ -21,7 +21,7 @@
         <div class="mdl-cell mdl-cell--4-col  mdl-typography--text-center">
             <div class="mdl-grid center-items">
                 <div class="center-splash">
-                    <form action="" method="post">
+                    <form id='button_holder' action="/login" method="post">
                         <h3 id="login-banner" class="mdl-typography--display-1 my-primary-font">
                             Login
                         </h3>
@@ -53,9 +53,8 @@
                             {% endif %}
                         {% endwith %}
 
-
-                        <button id="btn_login" formaction="/login" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Sign In</button>
-                        <button id="btn_signup" formaction="/signup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored hidden">Sign Up</button>
+                        <button id="btn_login" type="submit"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Sign In</button>
+                        <button id="btn_signup" type="submit"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored hidden">Sign Up</button>
 
                         <div class="mdl-grid center-items switch_holder">
                             <div class="mdl-typography--text-center">

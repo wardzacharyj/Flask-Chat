@@ -1,28 +1,33 @@
-<!-- Owner's  Staff List -->
+<!-- List of All Chat Rooms -->
+<div class="page-content mdl-grid center-items my-color-light-gray" >
+    <div class="mdl-cell mdl-cell--12-col">
+        <div class="mdl-grid center-items">
+            <div class="max-width">
+                {% if user['all_rooms'] %}
+                    <ul id='rooms_list' class="mdl-list " >
 
-<div class="max-width">
-    {% if user['all_rooms'] %}
-        <ul class="mdl-list " >
-
-        {% for room in user['all_rooms'] %}
-            <li class="mdl-list__item mdl-list__item--two-line">
-                <span class="mdl-list__item-primary-content">
-                  <i class="mdl-color--deep-purple-300 material-icons mdl-list__item-avatar major-icon-font">people</i>
-                  <span class="my-primary-font">{{ room.room_name }}</span>
-                  <span class="mdl-list__item-sub-title my-secondary-font">{{ room.room_owner }}s</span>
-                </span>
-                <span class="mdl-list__item-secondary-content">
-                  <a class="mdl-list__item-secondary-action" href="/room/{{ room.id }}">
-                      <i class="material-icons minor-icon-font">question_answer</i>
-                  </a>
-                </span>
-            </li>
-            {% if user['all_rooms'][-1] != room  %}
-                <hr class="my-sep">
-            {% endif %}
-        {% endfor %}
-        </ul>
-    {% else %}
-        <h6 style="padding-top: 55px; font-size: 16px;" class="mdl-typography--display-1 mdl-typography--text-center">There are no chat rooms created</h6>
-    {% endif %}
+                    {% for room in user['all_rooms'] %}
+                        <li class="mdl-list__item mdl-list__item--two-line">
+                            <span class="mdl-list__item-primary-content">
+                              <i class="mdl-color--deep-purple-300 material-icons mdl-list__item-avatar major-icon-font">people</i>
+                              <span class="my-primary-font">{{ room.name }}</span>
+                              <span class="mdl-list__item-sub-title my-secondary-font">{{ room.owner_name }}</span>
+                            </span>
+                            <span class="mdl-list__item-secondary-content">
+                              <a class="mdl-list__item-secondary-action" href="/room/{{ room.id }}">
+                                  <i class="material-icons minor-icon-font">question_answer</i>
+                              </a>
+                            </span>
+                        </li>
+                        {% if user['all_rooms'][-1] != room  %}
+                            <hr class="my-sep">
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <!-- <h6 style="padding-top: 55px; font-size: 16px;" class="mdl-typography--display-1 mdl-typography--text-center">There are no chat rooms created</h6> -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>

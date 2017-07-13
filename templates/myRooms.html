@@ -4,14 +4,25 @@
 
         Your Rooms
 
-        <button class="mdl-button mdl-js-button mdl-button--icon">
+
+        <button id='btn_show_room_create' class="mdl-button mdl-js-button mdl-button--icon">
             <i class="material-icons">add</i>
         </button>
 
     </span>
     <nav class="mdl-navigation">
+
+        <form id='create_room_form' method="post" class="create-room-holder my-secondary-font my-color-light-gray hidden">
+            <h6 class="mdl-card__title my-secondary-font">Add New Room</h6>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin: 16px; width: 175px;">
+                <input class="mdl-textfield__input" type="text" id="input_create_chat_room" name="input_create_chat_room">
+                <label class="mdl-textfield__label" for="input_create_chat_room">Name</label>
+            </div>
+        </form>
+
+
         {% for r in user['my_room'] %}
-            <a class="mdl-navigation__link custom-hover" href="/room/{{ r.id }}">{{ r.room_name }}</a>
+            <a class="mdl-navigation__link custom-hover" href="/room/{{ r.id }}">{{ r.name }}</a>
         {% endfor %}
     </nav>
 </div>

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
 
@@ -7,7 +8,12 @@
 
         <!-- JS Resources -->
         <script type="text/javascript" src="{{ url_for('static', filename='stylesheets/material.min.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='stylesheets/dash.js') }}"></script>
+
+        {% if user is defined %}
+        <script type="text/javascript" src="{{ url_for('static', filename='stylesheets/chatroom.js') }}"></script>
+        {% else %}
+        <script type="text/javascript" src="{{ url_for('static', filename='stylesheets/messenger.js') }}"></script>
+        {% endif %}
 
 
         <!-- Material Design icon font -->
@@ -25,12 +31,13 @@
 
                 <div class="mdl-layout__header-row">
 
+
                     {% if user is defined %}
                         <span class="mdl-layout-title">Chat Rooms</span>
-                    {% elif room.owner_id == room.sender_id %}
+                    {% elif room.owner_id|int() == room.sender_id|int() %}
                         <span class="mdl-layout-title">{{ room.room_name }}</span>
-                        <button class="mdl-button mdl-js-button mdl-button--icon left-offset">
-                             <i class="material-icons" href="/delete_room/{{ room.id }}">delete</i>
+                        <button id='trash_can' class="mdl-button mdl-js-button mdl-button--icon left-offset">
+                             <i id='kill_room' class="material-icons" href="/delete_room/{{ room.id }}">delete</i>
                         </button>
                     {% else %}
                         <span class="mdl-layout-title">{{ room.room_name }}</span>
@@ -60,20 +67,17 @@
             <main class="mdl-layout__content">
 
 
-                <div class="page-content mdl-grid center-items" style="background: #36393e">
-                    <div class="mdl-cell mdl-cell--12-col">
+                {% if user is defined %}
+                    {% include "roomList.html" %}
+                {% else %}
+                    {% include "chat.html" %}
+                {% endif %}
 
-                        <div class="mdl-grid center-items">
-                            {% if user is defined %}
-                                {% include "roomList.html" %}
-                            {% else %}
 
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
 
             </main>
+
+
 
         </div>
   </body>

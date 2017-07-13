@@ -1,9 +1,18 @@
 from flask import Flask, session, redirect, url_for, escape, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_
+from datetime import datetime, timedelta
+import json
+
+from sqlalchemy import or_
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///catering.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chat.db'
 db = SQLAlchemy(app)
+
+app.secret_key = "this is a terrible secret key"
+
 
 ###########################################################################################
 #                           Model For Application                                         #
@@ -33,9 +42,9 @@ class User(db.Model):
         }
 
 
-class ChatRoom(db.Model):
+class Chatroom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.String(30), db.ForeignKey('user.id'), nullable=False, unique=True)
+    owner_id = db.Column(db.String(30), db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(30), nullable=False)
 
     def __init__(self, owner_id, name):
@@ -92,65 +101,219 @@ def initdb_command():
 
 
 ###########################################################################################
-#                                    Routes                                               #
+#                                    Controller                                           #
 ###########################################################################################
 
-app.secret_key = "this is a terrible secret key"
+
+def build_user(u):
+    my_rooms = [r.as_dict() for r in Chatroom.query.filter_by(owner_id=u['id']).all()]
+    for x in my_rooms:
+        del x['owner_id']
+
+    all_rooms = [all_r.as_dict() for all_r in Chatroom.query.filter(Chatroom.owner_id != u['id']).all()]
+    for r in all_rooms:
+        owner_name = User.query.filter_by(id=r['owner_id']).first().name
+        r['owner_name'] = owner_name
+        del r['owner_id']
+
+    return {
+        'id': u['id'],
+        'name': u['name'],
+        'my_room': my_rooms,
+        'all_rooms': all_rooms
+    }
+
+
+def verify_user(u, p):
+    valid_user = User.query.filter(and_(User.username == u, User.password == p)).first()
+    if valid_user:
+        session['user'] = valid_user.as_dict()
+
+
+def verify_room_owner(user_id, room_id):
+    valid_owner = Chatroom.query.filter(and_(Chatroom.owner_id == user_id, Chatroom.id == room_id,)).first()
+    if valid_owner:
+        return True
+    else:
+        return False
+
+
+def delete_chatroom(room_id):
+    valid_owner = Chatroom.query.filter_by(id=room_id).first()
+    db.session.delete(valid_owner)
+    db.session.commit()
+
+
+def room_exists(room_id):
+    r = Chatroom.query.filter_by(id=room_id).first()
+    if r:
+        return True
+    else:
+        return False
+
+
+def recent_users(room_id):
+    five_min_ago = datetime.utcnow() - timedelta(minutes=5)
+    raw_user_info = Message.query.filter(and_(Message.room_id == room_id, Message.time >= five_min_ago))
+    active_users = []
+    for user in raw_user_info:
+        active_users.append(user.name)
+
+    return active_users
+
+
+def get_all_rooms(current_user_id):
+
+    my_rooms = [m.as_dict() for m in Chatroom.query.filter_by(owner_id=current_user_id).all()]
+    for ro in my_rooms:
+        del ro['owner_id']
+
+    other_rooms = [r.as_dict() for r in Chatroom.query.filter(Chatroom.owner_id != current_user_id).all()]
+    for ro in other_rooms:
+        owner_name = User.query.filter_by(id=ro['owner_id']).first().name
+        ro['owner_name'] = owner_name
+        del ro['owner_id']
+
+    return {
+        'my_rooms': my_rooms,
+        'other_rooms': other_rooms
+    }
+
+
+def get_room_info(active_user, room_id):
+    selected_room = (Chatroom.query.filter_by(id=room_id).first()).as_dict()
+    return {
+        'id': selected_room['id'],
+        'owner_id': selected_room['owner_id'],
+        'room_name': selected_room['name'],
+        'sender_name': active_user['name'],
+        'sender_id': active_user['id'],
+        'users': recent_users(room_id)
+    }
+
+
+def add_user(name, username, password):
+    if User.query.filter_by(username=username).first():
+        return False
+    else:
+        user = User(name, username, password)
+        db.session.add(user)
+        db.session.commit()
+        return True
+
+
+def add_room(user_id, room_name):
+    if Chatroom.query.filter_by(name=room_name).first():
+        return True
+    else:
+        new_room = Chatroom(user_id, room_name)
+        db.session.add(new_room)
+        db.session.commit()
+        return True
+
+
+###########################################################################################
+#                                    Routes                                               #
+###########################################################################################
 
 
 @app.route("/")
 def splash():
-    return render_template("splash.html")
+    if 'user' in session:
+        return redirect(url_for('home'))
+    else:
+        return render_template("splash.html")
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return redirect(url_for("splash"))
+    else:
+        usr = request.form['username']
+        pw = request.form['password']
+
+        if len(usr) == 0 and len(pw) == 0:
+            flash("Please fill out all the fields")
+        else:
+            verify_user(usr, pw)
+            if 'user' in session:
+                return redirect(url_for('home'))
+            else:
+                flash('That User Does not exist in the database')
+                return redirect(url_for('splash'))
+
+
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    if request.method == "GET":
+        return redirect(url_for("splash"))
+    else:
+        name = request.form['name']
+        usr = request.form['username']
+        pw = request.form['password']
+        if add_user(name, usr, pw):
+            verify_user(usr, pw)
+            return redirect(url_for("home"))
+        else:
+            flash('Sorry a user with that username already exists')
+            return redirect(url_for("splash"))
 
 
 @app.route("/home")
 def home():
-
-    user = {
-        'id': 1,
-        'name': 'name',
-        'my_room': [
-            {
-                'id': 2,
-                'room_name': 'The Best Room'
-            },
-            {
-                'id': 3,
-                'room_name': 'The Best Room 2'
-            }
-
-        ],
-        'all_rooms': [
-            {
-                'id': 4,
-                'room_name': 'Main Room 1',
-                'room_owner': 'owner of main room 1'
-            },
-            {
-                'id': 5,
-                'room_name': 'Main Room 2',
-                'room_owner': 'owner of main room 2'
-            },
-
-        ]
-    }
-
-    return render_template("dashboard.html", user=user)
+    if 'user' in session:
+        session['home'] = build_user(session['user'])
+        # print(session['home'])
+        return render_template("home.html", user=session['home'])
+    else:
+        return redirect(url_for("splash"))
 
 
 @app.route('/room/<int:room_id>')
 def room(room_id):
+    if 'user' in session and room_exists(room_id):
+        return render_template("home.html", room=get_room_info(session['user'], room_id))
+    else:
+        return redirect(url_for("home"))
 
-    r = {
-        'id': 2,
-        'owner_id': 1,
-        'room_name': 'The Best Room',
-        'sender_name': 'Zach',
-        'sender_id': 1,
-        'users': ['Zach', 'Ian', 'Molly']
-    }
 
-    return render_template("dashboard.html", room=r)
+@app.route('/create_room', methods=["POST"])
+def create_room():
+    if request.json['name'] and 'user' in session:
+        add_room(session['user']['id'], request.json['name'])
+        return 'Success'
+    else:
+        return 'Failed'
+
+
+@app.route('/delete_room/<int:room_id>', methods=["POST"])
+def delete_room(room_id):
+    if 'user' in session:
+        is_valid = verify_room_owner(session['user']['id'], room_id)
+        print('Here', is_valid)
+        if is_valid:
+            delete_chatroom(room_id)
+            print('here')
+            return 'Success'
+    # Do not provide info about room client doesn't need
+    return 'That room does not exist'
+
+
+@app.route('/poll_rooms', methods=["GET"])
+def poll_room():
+    if 'user' in session:
+        rooms_json = json.dumps(get_all_rooms(session['user']['id']))
+        print(rooms_json)
+        return rooms_json
+    else:
+        return 'Failed'
+
+
+@app.route('/logout',  methods=["GET", "POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("splash"))
 
 
 if __name__ == '__main__':
