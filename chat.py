@@ -1,10 +1,18 @@
 from flask import Flask, session, redirect, url_for, escape, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_
+from sqlalchemy import or_
+from sqlalchemy import func
+
+
 from datetime import datetime, timedelta
+from sqlalchemy.exc import IntegrityError
 import json
 
-from sqlalchemy import or_
+import time
+
+
+
 
 
 app = Flask(__name__)
@@ -128,6 +136,8 @@ def verify_user(u, p):
     valid_user = User.query.filter(and_(User.username == u, User.password == p)).first()
     if valid_user:
         session['user'] = valid_user.as_dict()
+        session['user']['active_room'] = -1
+        session.modified = True
 
 
 def verify_room_owner(user_id, room_id):
@@ -154,10 +164,10 @@ def room_exists(room_id):
 
 def recent_users(room_id):
     five_min_ago = datetime.utcnow() - timedelta(minutes=5)
-    raw_user_info = Message.query.filter(and_(Message.room_id == room_id, Message.time >= five_min_ago))
+    raw_user_info = Message.query.filter(and_(Message.room_id == room_id, Message.time >= five_min_ago)).distinct()
     active_users = []
     for user in raw_user_info:
-        active_users.append(user.name)
+        active_users.append(user.sender_name)
 
     return active_users
 
@@ -212,6 +222,43 @@ def add_room(user_id, room_name):
         return True
 
 
+def send_message_to(room_id, message, user):
+    try:
+        message = Message(room_id, user['id'], user['name'], message, datetime.utcnow())
+        db.session.add(message)
+        db.session.commit()
+        return True
+    except IntegrityError:
+        flash('Message Failed to Send')
+        return False
+
+
+def get_messages_since(chat_room_id, most_recent_id):
+    if most_recent_id == -1:
+        most_recent_id = db.session.query(func.max(Message.id)).first()
+        most_recent_id = most_recent_id[0]
+
+    print(most_recent_id)
+    raw_messages = Message.query.filter(Message.room_id == chat_room_id, Message.id > most_recent_id).all()
+
+    recent_messages = [m.as_dict() for m in raw_messages]
+    new_offset = len(recent_messages)
+
+    for x in recent_messages:
+        if x['sender_id'] == session['user']['id']:
+            x['type'] = 'outbound'
+        else:
+            x['type'] = 'inbound'
+        x['time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        del x['room_id']
+
+
+    return {
+        'recent_messages': recent_messages,
+        'most_recent_id': most_recent_id+new_offset
+    }
+
+
 ###########################################################################################
 #                                    Routes                                               #
 ###########################################################################################
@@ -264,7 +311,6 @@ def signup():
 def home():
     if 'user' in session:
         session['home'] = build_user(session['user'])
-        # print(session['home'])
         return render_template("home.html", user=session['home'])
     else:
         return redirect(url_for("splash"))
@@ -273,9 +319,21 @@ def home():
 @app.route('/room/<int:room_id>')
 def room(room_id):
     if 'user' in session and room_exists(room_id):
+        session['user']['active_room'] = room_id
+        session.modified = True
         return render_template("home.html", room=get_room_info(session['user'], room_id))
     else:
         return redirect(url_for("home"))
+
+
+@app.route('/exit_room/<int:room_id>', methods=['POST'])
+def exit_room(room_id):
+    if 'user' in session and room_exists(room_id):
+        session['user']['active_room'] = -1
+        session.modified = True
+        return '/home'
+    else:
+        return 'Failed'
 
 
 @app.route('/create_room', methods=["POST"])
@@ -304,10 +362,45 @@ def delete_room(room_id):
 def poll_room():
     if 'user' in session:
         rooms_json = json.dumps(get_all_rooms(session['user']['id']))
-        print(rooms_json)
         return rooms_json
     else:
         return 'Failed'
+
+
+@app.route('/send/<int:room_id>', methods=["POST"])
+def send_message(room_id):
+    if 'user' in session:
+        if 'message' in request.json:
+            was_sent = send_message_to(room_id, request.json['message'], session['user'])
+            if was_sent:
+                return 'Success'
+
+    return 'Failed'
+
+
+@app.route('/get_messages/<int:room_id>', methods=["POST"])
+def get_messages(room_id):
+
+    if 'user' in session and 'most_recent_room_id' in request.json:
+        print(session['user'])
+        if session['user']['active_room'] == -1:
+            return json.dumps({
+                'redirect': '/home'
+            })
+        if room_id != session['user']['active_room']:
+            return json.dumps({
+                'redirect': '/room/'+str(session['user']['active_room'])
+            })
+        elif room_exists(room_id):
+            a = get_messages_since(room_id, request.json['most_recent_room_id'])
+            print(a)
+            return json.dumps(a)
+        else:
+            return json.dumps({
+                'error': 'ROOM DELETED'
+            })
+
+    return redirect(url_for('home'))
 
 
 @app.route('/logout',  methods=["GET", "POST"])

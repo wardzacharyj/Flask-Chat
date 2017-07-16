@@ -1,6 +1,6 @@
 <div class="chat-holder" >
 
-    <div class="chat-area">
+    <div id='message_holder' class="chat-area">
         {% include 'inboundMessage.html' %}
         {% include 'outboundMessage.html' %}
 
@@ -9,12 +9,17 @@
 
         <div class="message-box-holder width-80">
 
-            <input class="message-box" type="text" id="sample1">
-            <div class="message-send">
-                <i class="material-icons my-highlight-font">send</i>
-            </div>
-        </div>
+            <input class="message-box" type="text" id="message_input">
 
+
+
+            <div id='btn_send' class="message-send">
+                <button id='btn_send' class="mdl-button mdl-js-button mdl-button--icon left-offset">
+                    <i class="material-icons my-highlight-font" style="margin-left: 2px;">send</i>
+                </button>
+            </div>
+
+        </div>
 
     </footer>
 

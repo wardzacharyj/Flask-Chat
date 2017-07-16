@@ -26,6 +26,9 @@ html{
 }
 
 
+.m{
+
+}
 
 .message-entry{
     flex: .15;
@@ -122,6 +125,11 @@ html{
     background: #1e2124;
     border-right: none;
 }
+
+.hover{
+    cursor: pointer;
+}
+
 .custom-hover:hover{
     background: #2f3136 !important;
     color: #b9bbbe !important;
