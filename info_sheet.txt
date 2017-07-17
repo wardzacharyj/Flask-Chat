@@ -8,15 +8,15 @@ submission procedures page.
 
 Name:  Zachary Ward
 
-Lecture section:    MW 2:30
+Lecture section:            MW 2:30
 
 Recitation day and time:    M 2:30
 
-Assignment #:  3
+Assignment #:               3
 
-Program due date:  July 17
+Program due date:           July 17
 
-Handed in date:  July 17
+Handed in date:             July 17
 
 Source code file name(s):
 

@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
             else if (xhr.textContent !== 'Failed') {
                 alert('Leaving Room');
-                window.location.href = window.location.protocol+'//'+window.location.host+xhr.textContent
+                window.location.href = window.location.protocol+'//'+window.location.host+'/home'
             }
         };
 

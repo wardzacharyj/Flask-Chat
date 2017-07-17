@@ -164,7 +164,8 @@ def room_exists(room_id):
 
 def recent_users(room_id):
     five_min_ago = datetime.utcnow() - timedelta(minutes=5)
-    raw_user_info = Message.query.filter(and_(Message.room_id == room_id, Message.time >= five_min_ago)).distinct()
+    raw_user_info = Message.query.distinct(Message.sender_id).filter(
+        and_(Message.room_id == room_id, Message.time >= five_min_ago, Message.sender_id != session['user']['id']))
     active_users = []
     for user in raw_user_info:
         active_users.append(user.sender_name)
@@ -234,6 +235,12 @@ def send_message_to(room_id, message, user):
 
 
 def get_messages_since(chat_room_id, most_recent_id):
+    if db.session.query(Message.id).count() == 0:
+        return {
+            'recent_messages': {},
+            'most_recent_id': -1
+        }
+
     if most_recent_id == -1:
         most_recent_id = db.session.query(func.max(Message.id)).first()
         most_recent_id = most_recent_id[0]
@@ -251,7 +258,6 @@ def get_messages_since(chat_room_id, most_recent_id):
             x['type'] = 'inbound'
         x['time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         del x['room_id']
-
 
     return {
         'recent_messages': recent_messages,
