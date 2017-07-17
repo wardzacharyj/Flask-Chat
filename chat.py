@@ -1,15 +1,11 @@
 from flask import Flask, session, redirect, url_for, escape, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_
-from sqlalchemy import or_
 from sqlalchemy import func
-
-
 from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError
 import json
 
-import time
 
 
 
@@ -74,7 +70,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_id = db.Column(db.Integer, db.ForeignKey('chatroom.id'), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    sender_name = db.Column(db.Integer, db.ForeignKey('user.name'), nullable=False)
+    sender_name = db.Column(db.String(30), nullable=False)
     message = db.Column(db.String(140), nullable=False)
     time = db.Column(db.DateTime, nullable=False)
 
@@ -238,7 +234,7 @@ def get_messages_since(chat_room_id, most_recent_id):
     if db.session.query(Message.id).count() == 0:
         return {
             'recent_messages': {},
-            'most_recent_id': -1
+            'most_recent_id': 0
         }
 
     if most_recent_id == -1:

@@ -58,7 +58,18 @@ I struggled to interpret some of the requirements for this assignment particular
 'Users can be in only one chat room at a time'. In my mind I took this to mean that a user
 could freely explore other chatrooms in another tab but as soon as they attempt to join a
 room different from the one they are in they would be redirected to the newly selected room
-across all tabs.
+across all tabs. I made this decision because I felt it was a more fluid user experience than
+restricting their movement to one room until they left their current room.
+
+Additionally in my schema I chose to include the senders name in the Message table even though
+a back-reference would also be a valid strategy because I wanted to save myself from having to make an extra query
+to the user table every time I wanted to display the owner of a messages name.
+
+
+
+Sidenote
+- recent_users drawer in chat rooms is not updated live because it was not required
+    (I chose to leave the templates and base functionality in place)
 
 
 
